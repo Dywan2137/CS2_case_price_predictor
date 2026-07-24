@@ -102,7 +102,3 @@ def resample_weekly(df):
 
     print(f"Weekly: {len(w)} bars  {w.index[0].date()} -> {w.index[-1].date()}")
     return w
-
-# daily = load_daily(DATASET)
-# data_weekly = resample_weekly(daily)
-# print(data_weekly.head())

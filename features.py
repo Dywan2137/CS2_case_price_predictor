@@ -448,7 +448,4 @@ def build_matrix(weekly):
     return X, y, closes, feats
 
 
-daily = load_daily(DATASET)
-data_weekly = resample_weekly(daily)
-data_weekly = build_matrix(data_weekly)
-print(data_weekly)
+

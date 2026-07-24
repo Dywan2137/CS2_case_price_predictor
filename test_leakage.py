@@ -1,10 +1,6 @@
-"""The one test worth having.
-
-Every other bug makes one number wrong. Leakage makes every number wrong at
-once, and it does so in the flattering direction, which is why it survives so
-long unnoticed.
-
-    pytest test_leakage.py -v
+"""
+Testing if there is no data leackage after the feature engineering. 
+    
 """
 
 import numpy as np

@@ -9,4 +9,5 @@ from features import build_matrix
 daily = load_daily(DATASET)
 data_weekly = resample_weekly(daily)
 data_weekly = build_matrix(data_weekly)
-print(data_weekly)
+# print(data_weekly)
+
