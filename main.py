@@ -12,16 +12,16 @@ from helpers import save_table
  
  
 def main():
-    # ---------------------------------------------------------------- 1. data
+    # 1. data
     print("\n=== 1. DATA ===")
     daily = data.load_daily(cfg.DATASET)
     weekly = data.resample_weekly(daily)
  
-    # ------------------------------------------------------------ 2. features
+    # 2. features
     print("\n=== 2. FEATURES ===")
     X, y, closes, feats = features.build_matrix(weekly)
  
-    # -------------------------------------------------------- 3. stationarity
+    # 3. stationarity
     print("\n=== 3. STATIONARITY ===")
     stat = stats_tests.test_stationarity(X)
     stats_tests.stationarity_report(stat)
@@ -44,7 +44,7 @@ def main():
  
     X_spear = X_xgb.drop(columns=list(to_drop), errors="ignore")
  
-    # ------------------------------------------- 5. permutation importance
+    # 5. permutation importance
     # A first walk-forward pass, used only to score features. Importance is
     # measured on out-of-sample predictions — measuring it on training data
     # would reward memorisation.
@@ -67,7 +67,7 @@ def main():
     X_final = X_spear[keep]
     print(f"Features: {X_xgb.shape[1]} -> {X_spear.shape[1]} -> {len(keep)}")
  
-    # ------------------------------------------------------------ 6. xgboost
+    # 6. xgboost
     print("\n=== 6. XGBOOST ===")
     xgb_results, xgb_models = model_xgb.walk_forward_xgb(
         X_final, y.loc[X_final.index],
@@ -77,7 +77,7 @@ def main():
     xgb_met = model_xgb.walk_forward_metrics(xgb_results)
     model_xgb.walk_forward_report(xgb_results, xgb_met)
  
-    # ------------------------------------------------------- 7. linear model
+    # 7. linear model
     print("\n=== 7. LINEAR MODEL ===")
     shared = X_ols.columns.intersection(X_final.columns)
     X_vif, vif_log, _ = stats_tests.iterative_vif_elimination(
@@ -93,17 +93,24 @@ def main():
     model_linear.mle_report(mle_results, mle_met)
     model_linear.compare_models(mle_results, xgb_results, mle_met, xgb_met)
  
-    # Wald test on the last fold's fitted model: are the coefficients jointly
-    # significant, i.e. does the full model beat the intercept-only model?
+    # Wald tests on the last fold's fitted model.
     if mle_models:
+        # (a) overall: are the coefficients jointly significant vs intercept-only?
         stats_tests.wald_test(mle_models[-1])
+        # (b) nested: do the borderline features add joint signal on top of the
+        #     significant ones? Restricted (significant-only) vs full model.
+        #     Feature order must match what the model saw = X_vif.columns.
+        stats_tests.wald_nested_test(
+            mle_models[-1],
+            feature_names=list(X_vif.columns),
+            borderline=cfg.BORDERLINE_FEATURES,
+        )
  
-    # ---------------------------------------------------------- 8. evaluation
+    # 8. evaluation
     print("\n=== 8. EVALUATION ===")
     metrics_df, breakdown = evaluate.evaluate_vs_naive(xgb_results)
     evaluate.evaluation_report(metrics_df, breakdown)
  
-    # Returns (metrics, breakdown, prices) — in that order.
     price_met, price_break, prices = evaluate.backtransform_and_evaluate(
         results=xgb_results, closes=closes
     )
@@ -116,16 +123,9 @@ def main():
     mag_mle = evaluate.magnitude_analysis(mle_results, label="Linear (MLE)")
     evaluate.magnitude_report(mag_mle, label="Linear (MLE)")
  
-    # ------------------------------------------------------------ 9. backtest
-    # Accuracy and profitability are different claims. A model can beat the
-    # naive forecast on RMSE and still lose to buy-and-hold after costs.
+    # 9. backtest
+
     print("\n=== 9. BACKTEST ===")
-    # The backtest needs the SAME (possibly differenced) feature columns that
-    # X_final carries, not the original undifferenced ones in `feats`. Start
-    # from X_final and attach the non-feature columns the backtest reads (the
-    # target and a volatility column for the vol filter) — but skip any that
-    # are already in X_final, since a vol_* feature can survive selection and
-    # would otherwise collide in the join.
     extra_cols = [c for c in ("log_return", "Close", "vol_4w", "vol_13w")
                   if c in feats.columns and c not in X_final.columns]
     df_clean = X_final.join(feats.loc[X_final.index, extra_cols])
@@ -137,7 +137,7 @@ def main():
         oof, df_clean, list(X_final.columns), transaction_cost=cfg.TRANSACTION_COST
     )
  
-    # ---------------------------------------------------------------- 10. save
+    # 10. save
     print("\n=== 10. SAVING ===")
     for name, table in [
         ("walk_forward_xgb", xgb_results),
@@ -153,18 +153,13 @@ def main():
     ]:
         save_table(table, name, cfg.OUTPUT_DIR)
  
-    # --------------------------------------------------------------- 11. plots
+    # 11. plots
     print("\n=== 11. PLOTS ===")
-    # The yearly plots need PRICE-space objects (price_true / price_model /
-    # price_naive columns), not the raw log-return results. XGBoost already has
-    # them from step 8; the linear model needs its own backtransform here.
+
     mle_price_met, mle_price_break, mle_prices = evaluate.backtransform_and_evaluate(
         results=mle_results, closes=closes
     )
  
-    # Every figure goes under outputs/figures/, same place as the CSVs' parent,
-    # so nothing lands loose in the repo root. Each plot gets an explicit path
-    # rather than relying on its own default save location.
     import os
     fig_dir = os.path.join(cfg.OUTPUT_DIR, "figures")
     os.makedirs(fig_dir, exist_ok=True)

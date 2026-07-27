@@ -32,10 +32,19 @@ EXCLUDE = {
     # metadata
     "n_days",
 }
- 
+
+BORDERLINE_FEATURES = [
+    "roi_cross_down",         # ROI regime turns bearish
+    "knife_mean_lag1_d1",     # weekly knife-price change (byproduct channel)
+    "price_win_rate4",        # short-term momentum / mean reversion
+    "month_sin",              # seasonality (paired with month_cos)
+    "is_major_week",          # CS Major demand event
+    "ratio_med_rmean4_d1",    # competitor pricing pressure
+]
+
 # selection
 SPEARMAN_THRESHOLD = 0.85  #
-VIF_THRESHOLD = 7.0       # linear model only
+VIF_THRESHOLD = 6.0       # linear model only
 PERM_FOLDS = 100           # folds used for permutation importance
  
 # walk-forward

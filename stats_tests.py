@@ -612,6 +612,10 @@ def permutation_report(perm_imp: pd.DataFrame, top_n: int = 20) -> None:
 # >> 5  WALD TEST  (linear model joint significance)
 # ============================================================
  
+# ============================================================
+# >> 5  WALD TEST  (linear model joint significance)
+# ============================================================
+ 
 def wald_test(model, features=None):
     """Test whether coefficients are jointly zero (the "does the restricted
     model lose anything?" test).
@@ -686,6 +690,86 @@ def wald_test(model, features=None):
     return {"tested": tested, "df": dof, "chi2": stat,
             "p_value": p, "significant": p < 0.05}
  
+ 
+def wald_nested_test(model, feature_names, borderline):
+    """Compare a restricted model against the full model by testing whether a
+    named group of borderline coefficients is JOINTLY zero.
+ 
+    The setup for "should I keep these economically-motivated but statistically
+    marginal variables?":
+ 
+        full model       = every feature in the fit
+        restricted model = full minus `borderline`
+        H0               = all borderline coefficients are zero at once
+ 
+    If the test rejects H0, the borderline group adds real signal on top of the
+    significant variables and the FULL model is justified — even though each
+    borderline variable looked weak on its own. Individually marginal
+    coefficients (p ~ 0.05-0.15) can be jointly significant, because the
+    single-coefficient p-values each blame the others for shared variance.
+    If the test cannot reject, the group is jointly noise and the RESTRICTED
+    model is preferred on parsimony.
+ 
+    model         : fitted statsmodels result. Because the walk-forward fits on
+                    a numpy array, its coefficients are unnamed (x0, x1, ...);
+                    that is exactly why `feature_names` must be passed in.
+    feature_names : the feature columns in the order the model saw them (i.e.
+                    X_vif.columns). A constant is assumed at position 0, so
+                    feature i sits at coefficient position i+1.
+    borderline    : the feature names to test as a group. Names not present in
+                    the fitted model are skipped with a note (they may have been
+                    removed earlier by correlation or VIF pruning).
+ 
+    Returns a dict: tested, missing, df, chi2, p_value, keep_full.
+    """
+    feature_names = list(feature_names)
+ 
+    # feature i -> coefficient position i+1 (const at 0)
+    name_to_pos = {name: i + 1 for i, name in enumerate(feature_names)}
+ 
+    present = [b for b in borderline if b in name_to_pos]
+    missing = [b for b in borderline if b not in name_to_pos]
+ 
+    sep = "─" * 64
+    print(sep)
+    print("  NESTED WALD TEST — restricted vs full model")
+    print(f"  H0: the {len(present)} borderline coefficient(s) are jointly zero")
+    print(sep)
+ 
+    if missing:
+        print(f"  not in model (pruned earlier, skipped): {missing}")
+    if not present:
+        print("  none of the borderline features are in the model — nothing to test")
+        print(sep)
+        return {"tested": [], "missing": missing, "df": 0,
+                "chi2": float("nan"), "p_value": float("nan"), "keep_full": False}
+ 
+    k = len(model.params)
+    positions = [name_to_pos[b] for b in present]
+ 
+    R = np.zeros((len(positions), k))
+    for row, col in enumerate(positions):
+        R[row, col] = 1.0
+ 
+    result = model.wald_test(R, use_f=False, scalar=True)
+    stat = float(np.squeeze(result.statistic))
+    p = float(np.squeeze(result.pvalue))
+    dof = len(positions)
+    keep_full = p < 0.05
+ 
+    print(f"  borderline group ({dof}): {present}")
+    print(f"  chi2({dof}) : {stat:.4f}")
+    print(f"  p-value    : {p:.4g}")
+    if keep_full:
+        print("  verdict    : reject H0 — the group adds joint signal; KEEP the "
+              "full model")
+    else:
+        print("  verdict    : cannot reject H0 — the group is jointly "
+              "insignificant; the RESTRICTED model is preferred")
+    print(sep)
+ 
+    return {"tested": present, "missing": missing, "df": dof,
+            "chi2": stat, "p_value": p, "keep_full": keep_full}
  
 # ============================================================
 # >> 6  SIGNIFICANCE
