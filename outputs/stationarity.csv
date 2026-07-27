@@ -1,0 +1,77 @@
+feature,verdict,adf_p,kpss_p,action
+body_ratio_lag1,STATIONARY,0.0,0.1,USE RAW
+close_position_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+wick_asymmetry,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0026,0.01,REVIEW
+intraweek_range,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0003,0.01,REVIEW
+knife_body_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+knife_close_pos_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,DROP
+knife_wick_asym_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+knife_range_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+logret_lag1,STATIONARY,0.0,0.1,USE RAW
+logret_lag2,STATIONARY,0.0,0.1,USE RAW
+logret_rmean4,STATIONARY,0.0,0.1,USE RAW
+logret_rstd4,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+logret_rmean13,STATIONARY,0.0,0.1,USE RAW
+logret_rstd13,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+momentum_4w,STATIONARY,0.0,0.1,USE RAW
+momentum_13w,STATIONARY,0.0,0.1,USE RAW
+price_roc_4w,STATIONARY,0.0,0.1,USE RAW
+vol_4w,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+vol_13w,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,REVIEW
+price_vol_ratio,STATIONARY,0.0,0.1,USE RAW
+price_win_rate4,STATIONARY,0.0,0.1,USE RAW
+price_win_rate8,STATIONARY,0.0,0.1,USE RAW
+units_sum_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0025,0.01,REVIEW
+units_sum_lag2,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0027,0.01,REVIEW
+units_sum_lag3,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0021,0.01,REVIEW
+units_sum_lag4,"INCONCLUSIVE (ADF ok, KPSS fails)",0.002,0.01,REVIEW
+units_rmean4,NON-STATIONARY,0.3257,0.01,DIFF
+units_rmean13,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0006,0.01,DIFF
+units_sum_ratio,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.0205,REVIEW
+units_roc_1w,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.0242,REVIEW
+units_roc_4w,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.0308,REVIEW
+knife_mean_lag1,NON-STATIONARY,0.9907,0.01,DIFF
+knife_rmean4,NON-STATIONARY,0.9846,0.01,DIFF
+knife_rstd4,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0112,0.01,REVIEW
+knife_rmean13,NON-STATIONARY,0.994,0.01,DIFF
+knife_rstd13,NON-STATIONARY,0.0776,0.01,DIFF
+knife_roc_4w,STATIONARY,0.0,0.1,USE RAW
+knife_macd,STATIONARY,0.0,0.1,USE RAW
+knife_macd_hist,STATIONARY,0.0,0.1,USE RAW
+knife_vol_4w,STATIONARY,0.0,0.1,USE RAW
+knife_vol_13w,STATIONARY,0.0,0.1,USE RAW
+knife_vol_ratio,STATIONARY,0.0,0.1,USE RAW
+roi_mean_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0098,0.01,DIFF
+roi_mean_lag2,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0099,0.01,DIFF
+roi_range_lag1,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.01,DIFF
+roi_rmean4,NON-STATIONARY,0.1654,0.01,DIFF
+roi_rmean13,NON-STATIONARY,0.2472,0.01,DIFF
+roi_roc_1w,STATIONARY,0.0,0.1,USE RAW
+roi_roc_4w,STATIONARY,0.0,0.1,USE RAW
+roi_mom_cross_4_13,STATIONARY,0.0,0.1,USE RAW
+roi_cross_up,STATIONARY,0.0,0.1,USE RAW
+roi_cross_down,STATIONARY,0.0,0.1,USE RAW
+players_rmean4,NON-STATIONARY,0.8068,0.01,DIFF
+players_rmean13,NON-STATIONARY,0.8187,0.01,DIFF
+players_delta,STATIONARY,0.0,0.1,USE RAW
+players_roc_4w,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.0365,REVIEW
+players_roc_8w,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0005,0.0205,REVIEW
+players_mom_cross,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0016,0.0167,REVIEW
+ratio_min_lag1,NON-STATIONARY,0.6495,0.01,DIFF
+ratio_med_lag1,NON-STATIONARY,0.4702,0.01,DIFF
+ratio_min_rmean4,NON-STATIONARY,0.7334,0.01,DIFF
+ratio_med_rmean4,NON-STATIONARY,0.699,0.01,DIFF
+ratio_min_rmean13,NON-STATIONARY,0.6242,0.01,DIFF
+ratio_med_rmean13,NON-STATIONARY,0.5777,0.01,DIFF
+ratio_min_roc_1w,STATIONARY,0.0,0.1,USE RAW
+ratio_med_roc_1w,STATIONARY,0.0,0.1,USE RAW
+ratio_spread_lag1,NON-STATIONARY,0.6387,0.01,DIFF
+price_vol_divergence,STATIONARY,0.0,0.1,USE RAW
+roi_x_players,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0071,0.01,DIFF
+knife_vs_price_mom,STATIONARY,0.0,0.0749,USE RAW
+demand_supply_ratio,STATIONARY,0.0,0.0843,USE RAW
+ratio_x_units_mom,"INCONCLUSIVE (ADF ok, KPSS fails)",0.0,0.035,REVIEW
+month_sin,STATIONARY,0.0,0.1,USE RAW
+month_cos,STATIONARY,0.0,0.1,USE RAW
+is_major_week,STATIONARY,0.0,0.1,USE RAW
+is_steam_sale,STATIONARY,0.0,0.1,USE RAW

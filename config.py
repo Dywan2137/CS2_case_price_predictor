@@ -1,17 +1,17 @@
 """
-All settings in one place.
+All settings
 """
 
 # data
-DATASET = "data/operation_bravo_case_chart_data.csv"
-
-END_DATE = "2025-10-22"        # data quality cut-off
-DROP_POOL_DATE = "2025-12-17"  # rare drop pool removed; drops become 0 after
-
+DATASET = "data/operation_bravo_case_data.csv"
+ 
+END_DATE = "2025-10-22"        # data cut-off
+DROP_POOL_DATE = "2025-12-17"  # rare drop pool removed, drops become 0 after
+ 
 # target
 TARGET = "log_return"
+ 
 
-# Columns that do not enter the feature matrix.
 EXCLUDE = {
     TARGET,
     # raw OHLC — the target is derived from Close
@@ -32,24 +32,31 @@ EXCLUDE = {
     # metadata
     "n_days",
 }
-
+ 
 # selection
-SPEARMAN_THRESHOLD = 0.85  # features correlating above this are redundant
-VIF_THRESHOLD = 10.0       # linear model only
+SPEARMAN_THRESHOLD = 0.85  #
+VIF_THRESHOLD = 7.0       # linear model only
 PERM_FOLDS = 100           # folds used for permutation importance
-
+ 
 # walk-forward
-MIN_TRAIN_WEEKS = 104  # 2 years before the first test fold
-VAL_WEEKS = 26         # 6 months for early stopping
-STEP = 1               # test every week
+# Rolling window trains on a fixed number of weeks, then rolls forward.
+# Expanding on the other hand keeps all history, which in a regime changing market leeds to model overfit.
+# When testing the expanding window the model prediction was useless, so rolling is the baseline for now,
+#untill i figire out what to do with the expanding window.
 
+WINDOW = "rolling"     # "rolling" or "expanding"
+TRAIN_WEEKS = 104      # rolling window length (2 years)
+MIN_TRAIN_WEEKS = 104  # history required before the first test fold
+VAL_WEEKS = 26         # 6 months, early stopping only, never in the test fold
+STEP = 1               # test every week, then metrics are agregated later for all years
+ 
 # models
 SEED = 42
-
+ 
 XGB_PARAMS = {
     "n_estimators": 2000,
     "learning_rate": 0.01,
-    "max_depth": 5,
+    "max_depth": 4,
     "subsample": 0.7,
     "colsample_bytree": 0.8,
     "colsample_bynode": 0.7,
@@ -61,11 +68,11 @@ XGB_PARAMS = {
     "random_state": SEED,
     "verbosity": 0,
 }
-
+ 
 # backtest
-TRANSACTION_COST = 0.002  # floatDB market fee 
+TRANSACTION_COST = 0.002  # float market fee, didnt use steam because of the 15% market fee which eats all the profits.
 PERIODS_PER_YEAR = 52
 CONVICTION_QUANTILE = 0.70
-
+ 
 # output
 OUTPUT_DIR = "outputs"
